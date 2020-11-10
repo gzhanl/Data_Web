@@ -109,6 +109,12 @@ def main():
             st.header('北向资金分析')
             st.subheader('北向资金总体分析')
 
+            # 显示数据
+            with st.beta_expander("Data:" ):
+                 df=ts.get_nbfbk_status()
+                 st.header(df.iloc[0, 0] + '   ' + '北向资金行业板块情況')
+                 st.dataframe(df)
+
         elif choice_2 == '板块分析':
             st.header('北向资金分析')
             st.subheader('北向资金板块持股历史数据')
@@ -226,6 +232,14 @@ def get_bk_buy_data(bk_code):
 def show_bk_buy_data(bk_code):
     df=get_bk_buy_data(bk_code)
     st.dataframe(df)
+
+
+# # 获取 北向资金總體板块持股情況
+# def get_nbfbk_status( ):
+#     # 获取板块 号码
+#     df = ts.get_nbfbk_hist_capital_flow(bk_code_no)
+#
+#     return df
 
 
 

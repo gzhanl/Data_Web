@@ -16,11 +16,6 @@ import  json as js
 def main():
 
 
-    # 全页显示 web app
-    # st.beta_set_page_config(layout="wide")    # old setting
-    st.set_page_config(layout="wide")
-
-
     # left siderbar tag
     menu=['总体板块分析','北向资金分析','个股估值']
 
@@ -100,7 +95,7 @@ def main():
 
         #st.header('北向资金分析')
 
-        choice_2=st.sidebar.radio("北向资金",["总体分析","板块分析"])
+        choice_2=st.sidebar.selectbox("北向资金",["总体分析","板块分析"])
 
 
 
@@ -124,17 +119,6 @@ def main():
             with st.beta_expander("Line Chart"):
                  df = get_nbfbk_data(bk_code)
 
-                 col1, col2, col3 = st.beta_columns([1, 1 ,1])
-
-                 with col1:
-                     max_scale = st.slider('MAX', 0.000, 1.000, 0.300, 0.005)
-
-
-                 with col2:
-                     min_scale = st.slider('MIN', 0.000, 1.000, 0.100, 0.005)
-
-
-
                  Line_Chart = {
                         "tooltip": {
                             "trigger": "axis",
@@ -148,11 +132,11 @@ def main():
                                 "saveAsImage": {"show": True},
                             }
                         },
-                        "legend": {"data": ["持股占北向资金比", "", ""]},
+                        "legend": {"data": ["主力买入比", "降水量", "平均温度"]},
                         "xAxis": [
                             {
                                 "type": "category",
-                                "data": df["date"].sort_index(ascending=False).tolist(),
+                                "data": df["date"].tolist(),
                                 "axisPointer": {"type": "shadow"},
                             }
                         ],
@@ -160,8 +144,8 @@ def main():
                             {
                                 "type": "value",
                                 "name": "比值",
-                                "min": min_scale,
-                                "max": max_scale,
+                                "min": 0,
+                                "max": 0.1,
                                 "interval": 0.01,
                                 "axisLabel": {"formatter": "{value} "},
                             },
@@ -176,10 +160,10 @@ def main():
                         ],
                         "series": [
                             {
-                                "name": "持股占北向资金比",
+                                "name": "主力买入比",
                                 "type": "line",
                                 "yAxisIndex": 0,
-                                "data": df["znzjb"].sort_index(ascending=False).tolist(),
+                                "data": df["cgbkb"].tolist(),
                             },
                         ],
                     }
@@ -228,14 +212,12 @@ def show_bk_buy_data(bk_code):
     st.dataframe(df)
 
 
-
 # 获取 北向资金板块持股历史 资料
 def get_nbfbk_data(bk_code):
     # 获取板块 号码
     bk_code_no=bk_code[-3:]
     #print(bk_code_no)
     df = ts.get_nbfbk_hist_capital_flow(bk_code_no)
-
     return df
 
 
@@ -243,7 +225,6 @@ def get_nbfbk_data(bk_code):
 # 显示 北向资金板块持股历史 资料
 def show_nbfbk_data(bk_code):
     df=get_nbfbk_data(bk_code)
-
     st.dataframe(df)
 
 

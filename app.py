@@ -112,7 +112,7 @@ def main():
             # 显示数据
             with st.beta_expander("Data:" ):
                  df=ts.get_nbfbk_status()
-                 st.header(df.iloc[0, 0] + '   ' + '北向资金行业板块情況')
+                 st.header(df.iloc[0, 0] + '    北向资金行业板块情況')
                  st.dataframe(df)
 
         elif choice_2 == '板块分析':
@@ -130,14 +130,29 @@ def main():
             with st.beta_expander("Line Chart"):
                  df = get_nbfbk_data(bk_code)
 
+                 df=df.drop(index=[0])   # 去除 None 值 ，不然 max() 失效
+                 print(df)
                  col1, col2, col3 = st.beta_columns([1, 1 ,1])
 
+
+                 min_value=df["znzjb"].astype(str).min()
+                 min_value=float(min_value) * 0.97
+
+                 print(min_value)
+
+
+
+                 max_value=df["znzjb"].astype(str).max( skipna = True)
+                 max_value=float(max_value)* 1.03
+
+                 print(max_value)
+
                  with col1:
-                     max_scale = st.slider('MAX', 0.000, 1.000, 0.300, 0.005)
+                     min_scale = st.slider('MIN', 0.000, 1.000, min_value, 0.005)
 
 
                  with col2:
-                     min_scale = st.slider('MIN', 0.000, 1.000, 0.100, 0.005)
+                     max_scale = st.slider('MAX', 0.000, 1.000, max_value, 0.005)
 
 
 

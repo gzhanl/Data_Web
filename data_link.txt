@@ -1,0 +1,3 @@
+北上资金每日数据
+
+http://push2his.eastmoney.com/api/qt/kamt.kline/get?fields1=f1,f3,f5&fields2=f51,f52&klt=101&lmt=500&ut=b2884a393a59ad64002292a3e90d46a5&cb=jQuery183049434708221599566_1605674442176&_=1605674460957

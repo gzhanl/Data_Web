@@ -107,10 +107,26 @@ def main():
         # 二级菜单---------------
         if choice_2 == '总体分析':
             st.header('北向资金分析')
-            st.subheader('北向资金总体分析')
+            st.subheader('北向资金实时数据  ')
+
+            df = ts.get_nf_realtime()
+            df_real_time=df[0]  # 这是实时北向资金全表
+            df_real_time=df_real_time[df_real_time["north_buy"]!='-']
+
+            mf=float(df_real_time.iloc[-1, 5]) / 10000  # 最后时刻的 北向净买额
+            st.subheader(df[1] +  ' ' + df_real_time.iloc[-1, 0] + ' 北向资金净买额： ' + str(mf) + '亿')  # df[1]是日期
+
+
+            st.dataframe(df_real_time.tail(5)) # 只显示最后5行
+
 
             # 显示数据
-            with st.beta_expander("Data:" ):
+            with st.beta_expander("Data : 北向资金近10日净流入："):
+                 df=ts.get_nf_dayline()
+                 st.dataframe(df.tail(10))
+                 # st.line_chart(df.tail(10)['Date'],float(df.tail(10)['north_flow']))
+
+            with st.beta_expander("Data : 北向资金行业板块情況：" ):
                  df=ts.get_nbfbk_status()
                  st.header(df.iloc[0, 0] + '    北向资金行业板块情況')
                  st.dataframe(df)

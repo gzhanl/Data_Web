@@ -96,6 +96,10 @@ def main():
             }
             st_echarts(Line_Chart)
 
+        with st.beta_expander("板块个股资金流(今日)"):
+             show_bk_stock_cf_data(bk_code)
+
+
     elif choice == '北向资金分析':
 
         #st.header('北向资金分析')
@@ -253,11 +257,11 @@ def select_bk_item():
     bk_code = bk_index['板块'][bk_choice]
     return bk_code
 
+
 # 获取 行业历史资金流 资料
 def get_bk_buy_data(bk_code):
     df = ts.get_bk_hist_capital_flow(bk_code)
     return df
-
 
 # 显示 行业历史资金流 资料
 def show_bk_buy_data(bk_code):
@@ -265,12 +269,22 @@ def show_bk_buy_data(bk_code):
     st.dataframe(df)
 
 
-# # 获取 北向资金總體板块持股情況
-# def get_nbfbk_status( ):
-#     # 获取板块 号码
-#     df = ts.get_nbfbk_hist_capital_flow(bk_code_no)
-#
-#     return df
+
+
+# 获取 板块个股资金流 资料
+def get_bk_stock_cf_data(bk_code):
+    df = ts.get_bk_stock_capital_flow(bk_code)
+    return df
+
+# 显示 板块个股资金流 资料
+def show_bk_stock_cf_data(bk_code):
+    df=get_bk_stock_cf_data(bk_code)
+    st.dataframe(data=df,width=2000, height=2000)
+
+
+
+
+
 
 
 
@@ -280,10 +294,7 @@ def get_nbfbk_data(bk_code):
     bk_code_no=bk_code[-3:]
     #print(bk_code_no)
     df = ts.get_nbfbk_hist_capital_flow(bk_code_no)
-
     return df
-
-
 
 # 显示 北向资金板块持股历史 资料
 def show_nbfbk_data(bk_code):

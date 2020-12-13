@@ -22,81 +22,34 @@ def main():
 
 
     # left siderbar tag
-    menu=['总体板块分析','北向资金分析','个股估值']
+    menu=['板块资金分析','北向资金分析','个股估值']
 
     choice=st.sidebar.selectbox('Menu',menu)
 
 
     # 根据 menu 选择显示页面内容
-    if choice == '总体板块分析':
+    if choice == '板块资金分析':
         # st.title('板块分析')
-        st.header('总体板块分析')
-        st.subheader('行业历史资金流')
+        st.header('板块资金分析')
+        #st.subheader('行业历史资金流')
 
         bk_code = select_bk_item()
 
 
         # 显示数据
-        with st.beta_expander("Data:"):
+        with st.beta_expander("板块历史资金流-Data:"):
+
              show_bk_buy_data(bk_code)
 
         # 画图
-        with st.beta_expander("Line Chart"):
-            df=get_bk_buy_data(bk_code)
+        with st.beta_expander("板块历史资金流买入比-Line Chart"):
 
-            # print(type(df["date"]))  #  <class 'pandas.core.series.Series'>
-            #  画图 行业历史资金流
-            Line_Chart = {
-                "tooltip": {
-                    "trigger": "axis",
-                    "axisPointer": {"type": "cross", "crossStyle": {"color": "#999"}},
-                },
-                "toolbox": {
-                    "feature": {
-                        "dataView": {"show": True, "readOnly": False},
-                        "magicType": {"show": True, "type": ["line", "bar"]},
-                        "restore": {"show": True},
-                        "saveAsImage": {"show": True},
-                    }
-                },
-                "legend": {"data": ["主力买入比", "降水量", "平均温度"]},
-                "xAxis": [
-                    {
-                        "type": "category",
-                        "data": df["date"].tolist(),
-                        "axisPointer": {"type": "shadow"},
-                    }
-                ],
-                "yAxis": [   ## 左边 Y轴
-                    {
-                        "type": "value",
-                        "name": "比值",
-                        "min": -20,
-                        "max": 20,
-                        "interval": 5,
-                        "axisLabel": {"formatter": "{value} "},
-                    },
-                    # {       ## 右边 Y轴
-                    #     "type": "value",
-                    #     "name": "温度",
-                    #     "min": 0,
-                    #     "max": 25,
-                    #     "interval": 5,
-                    #     "axisLabel": {"formatter": "{value} °C"},
-                    # },
-                ],
-                "series": [
-                    {
-                        "name": "主力买入比",
-                        "type": "line",
-                        "yAxisIndex": 0,
-                        "data": df["mainb_ratio"].tolist(),
-                    },
-                ],
-            }
-            st_echarts(Line_Chart)
+            plot_bk_buy_LineChart(bk_code)
+
+
 
         with st.beta_expander("板块个股资金流(今日)"):
+
              show_bk_stock_cf_data(bk_code)
 
 
@@ -246,7 +199,7 @@ def json_to_str():
     return index
 
 
-# 选择板块选项
+# 显示和选择板块选项
 def select_bk_item():
     bk_index = json_to_str()
     # 将 str格式板块资料 转为 list
@@ -268,6 +221,62 @@ def show_bk_buy_data(bk_code):
     df=get_bk_buy_data(bk_code)
     st.dataframe(df)
 
+
+# 画 行业历史资金流图
+def plot_bk_buy_LineChart(bk_code):
+    df = get_bk_buy_data(bk_code)
+
+    # print(type(df["date"]))  #  <class 'pandas.core.series.Series'>
+    #  画图 行业历史资金流
+    Line_Chart = {
+        "tooltip": {
+            "trigger": "axis",
+            "axisPointer": {"type": "cross", "crossStyle": {"color": "#999"}},
+        },
+        "toolbox": {
+            "feature": {
+                "dataView": {"show": True, "readOnly": False},
+                "magicType": {"show": True, "type": ["line", "bar"]},
+                "restore": {"show": True},
+                "saveAsImage": {"show": True},
+            }
+        },
+        "legend": {"data": ["主力买入比", "降水量", "平均温度"]},
+        "xAxis": [
+            {
+                "type": "category",
+                "data": df["date"].tolist(),
+                "axisPointer": {"type": "shadow"},
+            }
+        ],
+        "yAxis": [  ## 左边 Y轴
+            {
+                "type": "value",
+                "name": "比值",
+                "min": -20,
+                "max": 20,
+                "interval": 5,
+                "axisLabel": {"formatter": "{value} "},
+            },
+            # {       ## 右边 Y轴
+            #     "type": "value",
+            #     "name": "温度",
+            #     "min": 0,
+            #     "max": 25,
+            #     "interval": 5,
+            #     "axisLabel": {"formatter": "{value} °C"},
+            # },
+        ],
+        "series": [
+            {
+                "name": "主力买入比",
+                "type": "line",
+                "yAxisIndex": 0,
+                "data": df["mainb_ratio"].tolist(),
+            },
+        ],
+    }
+    st_echarts(Line_Chart)
 
 
 

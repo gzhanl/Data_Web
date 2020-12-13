@@ -39,18 +39,22 @@ def main():
         # 显示数据
         with st.beta_expander("板块历史资金流-Data:"):
 
-             show_bk_buy_data(bk_code)
+             display_bk_buy_data(bk_code)
 
         # 画图
         with st.beta_expander("板块历史资金流买入比-Line Chart"):
 
-            plot_bk_buy_LineChart(bk_code)
+             plot_bk_buy_LineChart(bk_code)
 
+        # 画图
+        # with st.beta_expander("板块历史资金流买入占比-Line Chart2"):
+        #
+        #      plot_bk_buy_Ratio_LineChart(bk_code)
 
 
         with st.beta_expander("板块个股资金流(今日)"):
 
-             show_bk_stock_cf_data(bk_code)
+             display_bk_stock_cf_data(bk_code)
 
 
     elif choice == '北向资金分析':
@@ -96,88 +100,16 @@ def main():
 
             # 显示数据
             with st.beta_expander("Data:"):
-                 show_nbfbk_data(bk_code)
+
+                 display_nbfbk_data(bk_code)
 
 
             # 画图
             with st.beta_expander("Line Chart"):
-                 df = get_nbfbk_data(bk_code)
 
-                 df=df.drop(index=[0])   # 去除 None 值 ，不然 max() 失效
-                 print(df)
-                 col1, col2, col3 = st.beta_columns([1, 1 ,1])
+                plot_nbfbk_data_LineChart(bk_code)
 
 
-                 min_value=df["znzjb"].astype(str).min()
-                 min_value=float(min_value) * 0.97
-
-                 print(min_value)
-
-
-
-                 max_value=df["znzjb"].astype(str).max( skipna = True)
-                 max_value=float(max_value)* 1.03
-
-                 print(max_value)
-
-                 with col1:
-                     min_scale = st.slider('MIN', 0.000, 1.000, min_value, 0.005)
-
-
-                 with col2:
-                     max_scale = st.slider('MAX', 0.000, 1.000, max_value, 0.005)
-
-
-
-                 Line_Chart = {
-                        "tooltip": {
-                            "trigger": "axis",
-                            "axisPointer": {"type": "cross", "crossStyle": {"color": "#999"}},
-                        },
-                        "toolbox": {
-                            "feature": {
-                                "dataView": {"show": True, "readOnly": False},
-                                "magicType": {"show": True, "type": ["line", "bar"]},
-                                "restore": {"show": True},
-                                "saveAsImage": {"show": True},
-                            }
-                        },
-                        "legend": {"data": ["持股占北向资金比", "", ""]},
-                        "xAxis": [
-                            {
-                                "type": "category",
-                                "data": df["date"].sort_index(ascending=False).tolist(),
-                                "axisPointer": {"type": "shadow"},
-                            }
-                        ],
-                        "yAxis": [  ## 左边 Y轴
-                            {
-                                "type": "value",
-                                "name": "比值",
-                                "min": min_scale,
-                                "max": max_scale,
-                                "interval": 0.01,
-                                "axisLabel": {"formatter": "{value} "},
-                            },
-                            # {       ## 右边 Y轴
-                            #     "type": "value",
-                            #     "name": "温度",
-                            #     "min": 0,
-                            #     "max": 25,
-                            #     "interval": 5,
-                            #     "axisLabel": {"formatter": "{value} °C"},
-                            # },
-                        ],
-                        "series": [
-                            {
-                                "name": "持股占北向资金比",
-                                "type": "line",
-                                "yAxisIndex": 0,
-                                "data": df["znzjb"].sort_index(ascending=False).tolist(),
-                            },
-                        ],
-                    }
-                 st_echarts(Line_Chart)
 
 
     else:
@@ -211,20 +143,16 @@ def select_bk_item():
     return bk_code
 
 
-# 获取 行业历史资金流 资料
-def get_bk_buy_data(bk_code):
-    df = ts.get_bk_hist_capital_flow(bk_code)
-    return df
 
 # 显示 行业历史资金流 资料
-def show_bk_buy_data(bk_code):
-    df=get_bk_buy_data(bk_code)
+def display_bk_buy_data(bk_code):
+    df=ts.get_bk_hist_capital_flow(bk_code)
     st.dataframe(df)
 
 
 # 画 行业历史资金流图
 def plot_bk_buy_LineChart(bk_code):
-    df = get_bk_buy_data(bk_code)
+    df = ts.get_bk_hist_capital_flow(bk_code)
 
     # print(type(df["date"]))  #  <class 'pandas.core.series.Series'>
     #  画图 行业历史资金流
@@ -280,40 +208,102 @@ def plot_bk_buy_LineChart(bk_code):
 
 
 
-# 获取 板块个股资金流 资料
-def get_bk_stock_cf_data(bk_code):
-    df = ts.get_bk_stock_capital_flow(bk_code)
-    return df
-
 # 显示 板块个股资金流 资料
-def show_bk_stock_cf_data(bk_code):
-    df=get_bk_stock_cf_data(bk_code)
+def display_bk_stock_cf_data(bk_code):
+    df=ts.get_bk_stock_capital_flow(bk_code)
     st.dataframe(data=df,width=2000, height=2000)
 
 
 
-
-
-
-
-
-# 获取 北向资金板块持股历史 资料
-def get_nbfbk_data(bk_code):
+# 显示 北向资金板块历史资金流 资料
+def display_nbfbk_data(bk_code):
     # 获取板块 号码
-    bk_code_no=bk_code[-3:]
-    #print(bk_code_no)
+    bk_code_no = bk_code[-3:]
+    # print(bk_code_no)
     df = ts.get_nbfbk_hist_capital_flow(bk_code_no)
-    return df
-
-# 显示 北向资金板块持股历史 资料
-def show_nbfbk_data(bk_code):
-    df=get_nbfbk_data(bk_code)
-
+    # df=get_nbfbk_data(bk_code)
     st.dataframe(df)
 
 
-#  画图 行业历史资金流
+#  画图 北向资金板块历史资金流
+def plot_nbfbk_data_LineChart(bk_code):
+    bk_code_no = bk_code[-3:]
+    # print(bk_code_no)
+    df = ts.get_nbfbk_hist_capital_flow(bk_code_no)
 
+    df = df.drop(index=[0])  # 去除 None 值 ，不然 max() 失效
+    print(df)
+    col1, col2, col3 = st.beta_columns([1, 1, 1])
+
+    min_value = df["znzjb"].astype(str).min()
+    min_value = float(min_value) * 0.97
+
+    print(min_value)
+
+    max_value = df["znzjb"].astype(str).max(skipna=True)
+    max_value = float(max_value) * 1.03
+
+    print(max_value)
+
+    with col1:
+        min_scale = st.slider('MIN', 0.000, 1.000, min_value, 0.005)
+
+    with col2:
+        max_scale = st.slider('MAX', 0.000, 1.000, max_value, 0.005)
+
+    Line_Chart = {
+        "tooltip": {
+            "trigger": "axis",
+            "axisPointer": {"type": "cross", "crossStyle": {"color": "#999"}},
+        },
+        "toolbox": {
+            "feature": {
+                "dataView": {"show": True, "readOnly": False},
+                "magicType": {"show": True, "type": ["line", "bar"]},
+                "restore": {"show": True},
+                "saveAsImage": {"show": True},
+            }
+        },
+        "legend": {"data": ["持股占北向资金比", "", ""]},
+        "xAxis": [
+            {
+                "type": "category",
+                "data": df["date"].sort_index(ascending=False).tolist(),
+                "axisPointer": {"type": "shadow"},
+            }
+        ],
+        "yAxis": [  ## 左边 Y轴
+            {
+                "type": "value",
+                "name": "比值",
+                "min": min_scale,
+                "max": max_scale,
+                "interval": 0.01,
+                "axisLabel": {"formatter": "{value} "},
+            },
+            # {       ## 右边 Y轴
+            #     "type": "value",
+            #     "name": "温度",
+            #     "min": 0,
+            #     "max": 25,
+            #     "interval": 5,
+            #     "axisLabel": {"formatter": "{value} °C"},
+            # },
+        ],
+        "series": [
+            {
+                "name": "持股占北向资金比",
+                "type": "line",
+                "yAxisIndex": 0,
+                "data": df["znzjb"].sort_index(ascending=False).tolist(),
+            },
+        ],
+    }
+    st_echarts(Line_Chart)
+
+
+def plot_bk_buy_Ratio_LineChart(bk_code):
+    st_echarts(Line_Chart)
 
 if __name__ == '__main__':
     main()

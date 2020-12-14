@@ -70,16 +70,17 @@ def main():
             st.header('北向资金分析')
             st.subheader('北向资金实时数据  ')
 
-            df = ts.get_nf_realtime()
-            df_real_time=df[0]  # 这是实时北向资金全表
-            df_real_time=df_real_time[df_real_time["north_buy"]!='-']
+            try:
+                    df = ts.get_nf_realtime()
+                    df_real_time=df[0]  # 这是实时北向资金全表
+                    df_real_time=df_real_time[df_real_time["north_buy"]!='-']
 
-            mf=float(df_real_time.iloc[-1, 5]) / 10000  # 最后时刻的 北向净买额
-            st.subheader(df[1] +  ' ' + df_real_time.iloc[-1, 0] + ' 北向资金净买额： ' + str(mf) + '亿')  # df[1]是日期
+                    mf=float(df_real_time.iloc[-1, 5]) / 10000  # 最后时刻的 北向净买额
+                    st.subheader(df[1] +  ' ' + df_real_time.iloc[-1, 0] + ' 北向资金净买额： ' + str(mf) + '亿')  # df[1]是日期
 
-
-            st.dataframe(df_real_time.tail(5)) # 只显示最后5行
-
+                    st.dataframe(df_real_time.tail(5)) # 只显示最后5行
+            except Exception as err_info :
+                    print(err_info)
 
             # 显示数据
             with st.beta_expander("Data : 北向资金近10日净流入："):

@@ -81,6 +81,7 @@ def main():
                     st.dataframe(df_real_time.tail(5)) # 只显示最后5行
             except Exception as err_info :
                     print(err_info)
+                    st.info("未有实时数据")
 
             # 显示数据
             with st.beta_expander("Data : 北向资金近10日净流入："):

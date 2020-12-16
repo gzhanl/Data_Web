@@ -219,6 +219,27 @@ def plot_bk_buy_Ratio_LineChart(bk_code):
 
     # print(type(df["date"]))  #  <class 'pandas.core.series.Series'>
     #  画图 行业历史资金流
+    # df["mainb_ratio_flow"]=df["mainb_ratio"]
+    print(type(df['mainb_ratio']))
+    # print(type(df['mainb_ratio_flow']))
+    df['mainb_ratio_flow']=pd.to_numeric(df['mainb_ratio'], errors='coerce')
+    df['Slargeb_ratio_flow'] = pd.to_numeric(df['Slargeb_ratio'], errors='coerce')
+
+
+
+
+
+    # df['mainb_ratio_flow']=df['mainb_ratio_flow'].cumsum()
+
+    df['M_SL_buy_ratio_flow']=df['mainb_ratio_flow'] + df['Slargeb_ratio_flow']
+    df['M_SL_buy_ratio_flow']=df['M_SL_buy_ratio_flow'].cumsum()
+    print(df['mainb_ratio_flow'])
+    print(df['M_SL_buy_ratio_flow'])
+    s = pd.Series([2, np.nan, 5, -1, 0])
+    print(type(s))
+    print(s.cumsum())
+
+
     Line_Chart = {
         "tooltip": {
             "trigger": "axis",
@@ -232,7 +253,7 @@ def plot_bk_buy_Ratio_LineChart(bk_code):
                 "saveAsImage": {"show": True},
             }
         },
-        "legend": {"data": ["主力买入比", "降水量", "平均温度"]},
+        "legend": {"data": ["主力买入比"]},
         "xAxis": [
             {
                 "type": "category",
@@ -244,8 +265,8 @@ def plot_bk_buy_Ratio_LineChart(bk_code):
             {
                 "type": "value",
                 "name": "比值",
-                "min": -20,
-                "max": 20,
+                "min": -300,
+                "max": 400,
                 "interval": 5,
                 "axisLabel": {"formatter": "{value} "},
             },
@@ -263,11 +284,11 @@ def plot_bk_buy_Ratio_LineChart(bk_code):
                 "name": "主力买入比",
                 "type": "line",
                 "yAxisIndex": 0,
-                "data": df["mainb_ratio"].tolist(),
+                "data": df['M_SL_buy_ratio_flow'].tolist(),
             },
         ],
     }
-    st_echarts(Line_Chart,key='2')
+    st_echarts(Line_Chart,key='2',height = "500px",width = "100%",)
 
 
 

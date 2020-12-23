@@ -90,6 +90,8 @@ def main():
                  # st.line_chart(df.tail(10)['Date'],float(df.tail(10)['north_flow']))
 
             with st.beta_expander("Data : 北向资金行业板块情況：" ):
+
+
                  df=ts.get_nbfbk_status()
                  st.header(df.iloc[0, 0] + '    北向资金行业板块情況')
                  st.dataframe(df)

@@ -8,6 +8,7 @@ from pyecharts.charts import Line
 from pyecharts import options as opts
 from pyecharts.charts import Bar , Line
 from streamlit_echarts import st_pyecharts
+import plotly.figure_factory as ff
 
 from decimal import  *
 
@@ -68,7 +69,7 @@ def main():
 
         #st.header('北向资金分析')
 
-        choice_2=st.sidebar.radio("北向资金",["总体分析","板块分析"])
+        choice_2=st.sidebar.radio('北向资金',['总体分析','板块分析','个股分析'])
 
 
 
@@ -144,17 +145,31 @@ def main():
                 plot_nbf_total_bk_data_LineChart(bk_code)
 
 
+        elif choice_2 == '个股分析':
+                st.subheader('北向资金个股资金流')
+                col1, col2 = st.beta_columns([1, 5])
+
+                with col1:
+                    stock_no = st.text_input("输入股票号码 Enter ", max_chars=10)
+
+                # with col2:
+                #     st.subheader('  ')
+                #     st.button("Go",key='1')
+
+                st.info(stock_no)
+
+
     else:
         st.subheader('个股估值')
 
-        col1,col2=st.beta_columns([3,1])
+        col1,col2=st.beta_columns([1,5])
 
         with col1:
-            stock_no=st.text_input("输入股票号码",max_chars=10)
+            stock_no=st.text_input("输入股票号码 Enter ",max_chars=10)
 
-        with col2:
-            if st.button("Go"):
-                dasd()
+        # with col2:
+        #     if st.button("Go"):
+        #         dasd()
 
 
 

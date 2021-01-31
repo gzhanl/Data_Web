@@ -11,7 +11,7 @@ from streamlit_echarts import st_pyecharts
 import plotly.figure_factory as ff
 
 from decimal import  *
-
+import time
 
 import numpy as np
 import pandas as pd
@@ -102,24 +102,19 @@ def main():
 
                  df=ts.get_nbfbk_status()
 
+                 # 保留14位小数位
                  getcontext().prec = 14
                  df['td_nf_ratio'] = df['td_nf_ratio'].apply(convert_to_float)
 
+
+                # 保留10位小数位
                  getcontext().prec = 10
-                 df['td_increase_nf_ratio'] = df['td_increase_nf_ratio'].apply(convert_to_float)
 
-                 # # df['td_nf_ratio'] = round(df['td_nf_ratio'].astype(float),10)
-                 #
-                 # df['td_increase_bk_ratio'] = df['td_increase_bk_ratio'].astype('float64')
-                 #
-                 #
-                 # df['td_increase_nf_ratio'] = df['td_increase_nf_ratio'].astype('float64')
-                 # df['td_increase_nf_ratio'] = df['td_increase_nf_ratio'].astype(float).round(decimals=8)
+                 # df['td_increase_nf_ratio'] = df['td_increase_nf_ratio'].apply(convert_to_float)
 
 
 
-
-                 st.header(df.iloc[0, 0] + '    北向资金行业板块情況  -- 以今日北资增持市值排序 ')  # df.iloc[0, 0] 时间
+                 st.header(df.iloc[0, 0] + '    北向资金行业板块情況  -- 以今日北资增持市值排序（td_increase_shareholding_value） ')  # df.iloc[0, 0] 时间
 
                  # st.info("td_stock_count:北资今日持股股票只数   td_shareholding_value：北资今日持股市值  td_bk_ratio：北资今日持股占板块比  td_nf_ratio：北资今日持股占北向资金比")
 
@@ -130,6 +125,11 @@ def main():
             st.subheader('北向资金板块持股历史数据')
 
             bk_code = select_bk_item()
+
+
+
+
+
 
             # 显示数据
             with st.beta_expander("Data:"):
@@ -150,7 +150,7 @@ def main():
                 col1, col2 = st.beta_columns([1, 5])
 
                 with col1:
-                    stock_no = st.text_input("输入股票号码 Enter ", max_chars=10)
+                    stock_no = st.text_input("输入股票号码 Enter    ", max_chars=10)
 
                 # with col2:
                 #     st.subheader('  ')
@@ -158,6 +158,36 @@ def main():
 
                 st.info(stock_no)
 
+                with st.beta_expander("沪深股通持股记录:"):
+
+
+                    df = ts.get_Stock_HK_Shareholding_Today()
+                    df["Shareholding_Percent"] = pd.to_numeric(df["Shareholding_Percent"])
+                    df = df.sort_values('Shareholding_Percent', ascending=False)
+
+                    col1, col2 ,col3= st.beta_columns([1,1,8])
+
+
+                    Date_Shareholding = df['Date'][1]
+                    Date_file=Date_Shareholding[1:5] + '-' + Date_Shareholding[6:8] + '-' + Date_Shareholding[-2:]
+
+                    File_path='C:\\Users\\DELL\\Desktop\\Data_Web\\DownLoad_Files\\'+ Date_file
+
+                    with col1:
+                        if st.button("Download CSV"):
+                            df.to_csv( File_path.strip() + '沪深股通持股记录.csv')
+                            # st.success('CSV OK !')
+
+                    with col2:
+                        if st.button("Download Excel"):
+                            df.to_excel( File_path.strip() + '沪深股通持股记录.xlsx')
+                            # st.success('Excel OK !')
+
+                    display_Stock_HK_Shareholding_Today()
+
+
+                         # file1.write(df)
+                         # file1.close()
 
     else:
         st.subheader('个股估值')
@@ -513,7 +543,7 @@ def plot_nbf_total_bk_data_LineChart(bk_code):
                 "name": "比值",
                 "min": min_value,
                 "max": max_value,
-                "interval": 0.01,
+                "interval": 0.002,
                 "axisLabel": {"formatter": "{value} "},
             },
             # {       ## 右边 Y轴
@@ -536,6 +566,25 @@ def plot_nbf_total_bk_data_LineChart(bk_code):
         ],
     }
     st_echarts(Line_Chart)
+
+
+# 显示 滬股通及深股通持股紀錄 今日
+def display_Stock_HK_Shareholding_Today():
+
+    df = ts.get_Stock_HK_Shareholding_Today()
+    Date_Shareholding=df['Date'][1]
+
+    # #####
+    # 重点：排序之前 ,先要将列类型改成 to_numberic
+    # #####
+
+    df["Shareholding_Percent"] = pd.to_numeric(df["Shareholding_Percent"])
+    df = df.sort_values('Shareholding_Percent',ascending=False)
+    # st.dataframe(df)
+    st.subheader('持股日期：' + Date_Shareholding )
+    st.dataframe(data=df, height=1000)
+
+
 
 
 if __name__ == '__main__':

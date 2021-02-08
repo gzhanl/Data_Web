@@ -150,40 +150,73 @@ def main():
                 col1, col2 = st.beta_columns([1, 5])
 
                 with col1:
-                    stock_no = st.text_input("输入股票号码 Enter    ", max_chars=10)
+
+
+                    stock_no = st.text_input("输入A股票号码 Enter    ", max_chars=10)
 
                 # with col2:
                 #     st.subheader('  ')
                 #     st.button("Go",key='1')
+                if stock_no=='':
+                    st.info('Please enter no.')
+                elif stock_no != '':
 
-                st.info(stock_no)
+                    
+                    stock_no=Trans_HKCODE_to_ACODE(stock_no)
+                    print(stock_no)
+                    # df_stock = pd.read_csv('C:\\Users\\DELL\\Desktop\\Data_Web\\沪深股通持股记录多日.csv')
+                    df_stock=ts.get_All_Stock_HK_Shareholding_Hist_CSV()
+                    df_stock = df_stock[df_stock['Stock_Code'] == int(stock_no)]
+                    st.dataframe(df_stock)
+                    plot_stock_in_nbf_Shareholding_Percent_LineChart(df_stock)
+
+
+
 
                 with st.beta_expander("沪深股通持股记录:"):
 
 
-                    df = ts.get_Stock_HK_Shareholding_Today()
-                    df["Shareholding_Percent"] = pd.to_numeric(df["Shareholding_Percent"])
-                    df = df.sort_values('Shareholding_Percent', ascending=False)
-
-                    col1, col2 ,col3= st.beta_columns([1,1,8])
+                    # df = ts.get_Stock_HK_Shareholding_Today()
+                    # df["Shareholding_Percent"] = pd.to_numeric(df["Shareholding_Percent"])
+                    # df = df.sort_values('Shareholding_Percent', ascending=False)
 
 
-                    Date_Shareholding = df['Date'][1]
-                    Date_file=Date_Shareholding[1:5] + '-' + Date_Shareholding[6:8] + '-' + Date_Shareholding[-2:]
 
-                    File_path='C:\\Users\\DELL\\Desktop\\Data_Web\\DownLoad_Files\\'+ Date_file
+                    # Date_Shareholding = df['Date'][1]
+                    # Date_file=Date_Shareholding[1:5] + '-' + Date_Shareholding[6:8] + '-' + Date_Shareholding[-2:]
+
+                    # File_path='C:\\Users\\DELL\\Desktop\\Data_Web\\DownLoad_Files\\'+ Date_file
+                    col1, col2, col3 ,col4= st.beta_columns([1, 1, 1,6])
+
+
+
 
                     with col1:
                         if st.button("Download CSV"):
+                            df = ts.get_Stock_HK_Shareholding_Today()
+                            df["Shareholding_Percent"] = pd.to_numeric(df["Shareholding_Percent"])
+                            df = df.sort_values('Shareholding_Percent', ascending=False)
+                            Date_Shareholding = df['Date'][1]
+                            Date_file = Date_Shareholding[1:5] + '-' + Date_Shareholding[6:8] + '-' + Date_Shareholding[-2:]
+                            File_path = 'C:\\Users\\DELL\\Desktop\\Data_Web\\DownLoad_Files\\' + Date_file
                             df.to_csv( File_path.strip() + '沪深股通持股记录.csv')
                             # st.success('CSV OK !')
 
                     with col2:
                         if st.button("Download Excel"):
+                            df = ts.get_Stock_HK_Shareholding_Today()
+                            df["Shareholding_Percent"] = pd.to_numeric(df["Shareholding_Percent"])
+                            df = df.sort_values('Shareholding_Percent', ascending=False)
+                            Date_Shareholding = df['Date'][1]
+                            Date_file = Date_Shareholding[1:5] + '-' + Date_Shareholding[6:8] + '-' + Date_Shareholding[-2:]
+                            File_path = 'C:\\Users\\DELL\\Desktop\\Data_Web\\DownLoad_Files\\' + Date_file
                             df.to_excel( File_path.strip() + '沪深股通持股记录.xlsx')
                             # st.success('Excel OK !')
 
-                    display_Stock_HK_Shareholding_Today()
+                    # if st.button("Show Data"):
+                    if st.checkbox("Show Data"):
+                        display_Stock_HK_Shareholding_Today()
+
 
 
                          # file1.write(df)
@@ -196,6 +229,7 @@ def main():
 
         with col1:
             stock_no=st.text_input("输入股票号码 Enter ",max_chars=10)
+
 
         # with col2:
         #     if st.button("Go"):
@@ -568,6 +602,85 @@ def plot_nbf_total_bk_data_LineChart(bk_code):
     st_echarts(Line_Chart)
 
 
+
+
+#  画图 当前個股佔交易所（A股）百分比
+def plot_stock_in_nbf_Shareholding_Percent_LineChart(df_stock):
+
+    Stock_Name = df_stock.iloc[1,3]  # 獲取第第3列 第1個數
+    # df.iloc[0, 0]
+    print(Stock_Name)
+    # min_value = df_stock["Shareholding_Percent"].astype(str).min()
+    min_value = df_stock["Shareholding_Percent"].min()
+
+    # min_value = float(min_value) * 0.97
+    min_value = round(float(min_value) * 0.97 ,2 )
+
+    print(min_value)
+
+    # max_value = df_stock["Shareholding_Percent"].astype(str).max(skipna=True)
+    max_value = df_stock["Shareholding_Percent"].max()
+    max_value = round(float(max_value) * 1.03 , 2)
+
+    print(max_value)
+
+    # with col1:
+    #     min_scale = st.slider('MIN', 0.000, 1.000, min_value, 0.005)
+    #
+    # with col2:
+    #     max_scale = st.slider('MAX', 0.000, 1.000, max_value, 0.005)
+
+    Line_Chart = {
+        "tooltip": {
+            "trigger": "axis",
+            "axisPointer": {"type": "cross", "crossStyle": {"color": "#999"}},
+        },
+        "toolbox": {
+            "feature": {
+                "dataView": {"show": True, "readOnly": False},
+                "magicType": {"show": True, "type": ["line", "bar"]},
+                "restore": {"show": True},
+                "saveAsImage": {"show": True},
+            }
+        },
+        "legend": {"data": [ Stock_Name + "--滬深港通持股占A股比", "", ""]},
+        "xAxis": [
+            {
+                "type": "category",
+                "data": df_stock["Date"].sort_index(ascending=True).tolist(),
+                "axisPointer": {"type": "shadow"},
+            }
+        ],
+        "yAxis": [  ## 左边 Y轴
+            {
+                "type": "value",
+                "name": "比值",
+                "min": min_value,
+                "max": max_value,
+                "interval": 1,
+                "axisLabel": {"formatter": "{value} "},
+            },
+            # {       ## 右边 Y轴
+            #     "type": "value",
+            #     "name": "温度",
+            #     "min": 0,
+            #     "max": 25,
+            #     "interval": 5,
+            #     "axisLabel": {"formatter": "{value} °C"},
+            # },
+        ],
+        "series": [
+            {
+                "name": Stock_Name + "--滬深港通持股占A股比",
+                "type": "line",
+                "color":"blue",
+                "yAxisIndex": 0,
+                "data": df_stock["Shareholding_Percent"].sort_index(ascending=True).tolist(),
+            },
+        ],
+    }
+    st_echarts(Line_Chart)
+
 # 显示 滬股通及深股通持股紀錄 今日
 def display_Stock_HK_Shareholding_Today():
 
@@ -584,6 +697,30 @@ def display_Stock_HK_Shareholding_Today():
     st.subheader('持股日期：' + Date_Shareholding )
     st.dataframe(data=df, height=1000)
 
+
+
+# 輸入A股代碼 返回港股對應A 股 代碼
+def Trans_HKCODE_to_ACODE(A_Code):
+    # A_Code='002050'
+    # token = '67bcc08d60c4287441a1a80dd58701c5fd2d2c916bbf6758bb9cc05d'
+    # pro = pro_api(token)
+    #
+    # res1 = pro.hk_hold(trade_date='20210201', exchange='SH')
+    # res2 = pro.hk_hold(trade_date='20210201', exchange='SZ')
+    #
+    # res = pd.concat([res1, res2])
+    # print(res)
+    res=pd.read_csv('C:\\Users\\DELL\\Desktop\\Data_Web\\TS_Code_Table.csv')
+    #  修改 ts_code 列   300999.SZ 》》  300999
+    res['ts_code']=res['ts_code'].map(lambda x:x[:6])
+
+    # print(res)
+
+    res = res[res['ts_code'] == A_Code]
+    # print(res)
+    # print(res.iloc[0,1])
+    return (res.iloc[0,1])
+    # return HK_Code
 
 
 

@@ -777,7 +777,12 @@ def Trans_HKCODE_to_ACODE(A_Code):
     #
     # res = pd.concat([res1, res2])
     # print(res)
-    res=pd.read_csv('C:\\Users\\DELL\\Desktop\\Data_Web\\TS_Code_Table.csv')
+
+    App_path = os.path.abspath(os.path.dirname(os.getcwd()))
+    # File_path = App_path + '\\Data\\
+    # res=pd.read_csv('C:\\Users\\DELL\\Desktop\\Data_Web\\TS_Code_Table.csv')
+    res=pd.read_csv(App_path + '\\Data\\TS_Code_Table.csv')
+
     #  修改 ts_code 列   300999.SZ 》》  300999
     res['ts_code']=res['ts_code'].map(lambda x:x[:6])
 

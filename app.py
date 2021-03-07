@@ -295,8 +295,16 @@ def main():
 
 
 # 读取json 档资料 转换为 str
+# def json_to_str():
+#     with open("stock_sectors_pool.json", "r", encoding='utf-8') as load_f:
+#          index=js.load(load_f)
+#     return index
+
 def json_to_str():
-    with open("stock_sectors_pool.json", "r", encoding='utf-8') as load_f:
+
+    App_path = os.path.abspath(os.path.dirname(os.getcwd()))
+
+    with open(App_path + '\\Data\\json\\stock_sectors_pool.json', 'r', encoding='utf-8') as load_f:
          index=js.load(load_f)
     return index
 

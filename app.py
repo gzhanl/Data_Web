@@ -9,7 +9,7 @@ from pyecharts import options as opts
 from pyecharts.charts import Bar , Line
 from streamlit_echarts import st_pyecharts
 import plotly.figure_factory as ff
-
+import os
 from decimal import  *
 import time
 
@@ -151,7 +151,7 @@ def main():
                               # df=ts.get_nbfbk_hist_capital_flow(bk_code_no)
                               dfs['df_{}'.format(bk_code_no)] = ts.get_nbfbk_hist_capital_flow(bk_code_no)
                               df_list.append(dfs['df_{}'.format(bk_code_no)])
-                              print(df_list)
+                              # print(df_list)
                           except Exception as e:
                               pass
                           continue
@@ -239,7 +239,7 @@ def main():
                     # File_path='C:\\Users\\DELL\\Desktop\\Data_Web\\DownLoad_Files\\'+ Date_file
                     col1, col2, col3 ,col4= st.beta_columns([1, 1, 1,6])
 
-
+                    App_path = os.path.abspath(os.path.dirname(os.getcwd()))
 
 
                     with col1:
@@ -249,7 +249,8 @@ def main():
                             df = df.sort_values('Shareholding_Percent', ascending=False)
                             Date_Shareholding = df['Date'][1]
                             Date_file = Date_Shareholding[1:5] + '-' + Date_Shareholding[6:8] + '-' + Date_Shareholding[-2:]
-                            File_path = 'C:\\Users\\DELL\\Desktop\\Data_Web\\DownLoad_Files\\' + Date_file
+                            # File_path = 'C:\\Users\\DELL\\Desktop\\Data_Web\\DownLoad_Files\\' + Date_file
+                            File_path = App_path + '\\Data\\DownLoad_Files\\' + Date_file
                             df.to_csv( File_path.strip() + '沪深股通持股记录.csv')
                             # st.success('CSV OK !')
 
@@ -260,7 +261,8 @@ def main():
                             df = df.sort_values('Shareholding_Percent', ascending=False)
                             Date_Shareholding = df['Date'][1]
                             Date_file = Date_Shareholding[1:5] + '-' + Date_Shareholding[6:8] + '-' + Date_Shareholding[-2:]
-                            File_path = 'C:\\Users\\DELL\\Desktop\\Data_Web\\DownLoad_Files\\' + Date_file
+                            # File_path = 'C:\\Users\\DELL\\Desktop\\Data_Web\\DownLoad_Files\\' + Date_file
+                            File_path = App_path +  '\\Data\\DownLoad_Files\\' + Date_file
                             df.to_excel( File_path.strip() + '沪深股通持股记录.xlsx')
                             # st.success('Excel OK !')
 

@@ -144,23 +144,31 @@ def main():
                      df_list = []
                      # bk_code = bk_index['板块'][bk_choice]
 
+                     App_path = os.path.abspath(os.path.dirname(os.getcwd()))
+
+                     File_path = App_path + '\\Data\\Industry_data\\'
+
+                     df.to_csv(File_path.strip() + '沪深股通持股记录.csv')
+
                      for bk_name in bk_list:
                           try :
                               bk_code = bk_index['板块'][bk_name]
                               bk_code_no = bk_code[-3:]
                               # df=ts.get_nbfbk_hist_capital_flow(bk_code_no)
                               dfs['df_{}'.format(bk_code_no)] = ts.get_nbfbk_hist_capital_flow(bk_code_no)
-                              df_list.append(dfs['df_{}'.format(bk_code_no)])
+                              # df_list.append(dfs['df_{}'.format(bk_code_no)])
+                              dfs['df_{}'.format(bk_code_no)].dropna(axis=0, how='any', inplace=True)
+                              dfs['df_{}'.format(bk_code_no)].to_excel( File_path + bk_code_no +'nfbk_trend.xlsx')
                               # print(df_list)
                           except Exception as e:
                               pass
                           continue
-                     df = pd.concat(df_list)
-                     df.dropna(axis=0, how='any', inplace=True)
-
-                     File_path = 'C:\\Users\\DELL\\Desktop\\Data_Web\\Data\\'
-                     # df.to_excel(File_path.strip() + 'nfbk_trend.xlsx')
-                     pd.read_excel(File_path.strip() + 'nfbk_trend.xlsx')
+                     # df = pd.concat(df_list)
+                     # df.dropna(axis=0, how='any', inplace=True)
+                     #
+                     # File_path = 'C:\\Users\\DELL\\Desktop\\Data_Web\\Data\\'
+                     # # df.to_excel(File_path.strip() + 'nfbk_trend.xlsx')
+                     # pd.read_excel(File_path.strip() + 'nfbk_trend.xlsx')
 
                      st.success("Finish ! ")
 
@@ -290,8 +298,8 @@ def main():
 
 
 
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 # 读取json 档资料 转换为 str

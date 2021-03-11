@@ -16,8 +16,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="228">
-              <caret line="159" column="101" lean-forward="true" selection-start-line="159" selection-start-column="101" selection-end-line="159" selection-end-column="101" />
+            <state relative-caret-position="283">
+              <caret line="160" column="102" selection-start-line="160" selection-start-column="102" selection-end-line="160" selection-end-column="102" />
               <folding>
                 <element signature="e#0#22#0" expanded="true" />
               </folding>
@@ -37,8 +37,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/request_test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1900">
-              <caret line="104" selection-start-line="104" selection-end-line="104" />
+            <state relative-caret-position="1235">
+              <caret line="69" column="83" selection-start-line="69" selection-start-column="27" selection-end-line="69" selection-end-column="83" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
               </folding>
@@ -67,8 +67,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/tushare/stock/trading.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="411">
-              <caret line="422" column="4" selection-start-line="422" selection-start-column="4" selection-end-line="422" selection-end-column="4" />
+            <state relative-caret-position="158">
+              <caret line="1005" column="82" selection-start-line="1005" selection-start-column="73" selection-end-line="1005" selection-end-column="82" />
               <folding>
                 <element signature="e#124#155#0" expanded="true" />
               </folding>
@@ -107,6 +107,8 @@
       <find>沪深股通持股记录多日</find>
       <find>Data_W</find>
       <find>json</find>
+      <find>request</find>
+      <find>my_header</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -118,13 +120,13 @@
         <option value="$PROJECT_DIR$/request_test.py" />
         <option value="C:/ProgramData/Anaconda3/Lib/site-packages/tushare/stock/cons.py" />
         <option value="C:/ProgramData/Anaconda3/Lib/site-packages/tushare/__init__.py" />
-        <option value="C:/ProgramData/Anaconda3/Lib/site-packages/tushare/stock/trading.py" />
         <option value="$PROJECT_DIR$/test.py" />
+        <option value="C:/ProgramData/Anaconda3/Lib/site-packages/tushare/stock/trading.py" />
         <option value="$PROJECT_DIR$/app.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="245" />
     <option name="y" value="5" />
     <option name="width" value="1205" />
@@ -138,8 +140,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="ProjectPane" />
       <pane id="Scope" />
+      <pane id="ProjectPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -244,7 +246,8 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
+    <frame x="-7" y="-7" width="1550" height="838" extended-state="7" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.021136064" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -270,17 +273,17 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://C:/ProgramData/Anaconda3/Lib/site-packages/tushare/stock/trading.py</url>
-          <line>275</line>
+          <line>286</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://C:/ProgramData/Anaconda3/Lib/site-packages/tushare/stock/trading.py</url>
-          <line>276</line>
+          <line>287</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://C:/ProgramData/Anaconda3/Lib/site-packages/tushare/stock/trading.py</url>
-          <line>268</line>
+          <line>278</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -442,8 +445,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/request_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1900">
-          <caret line="104" selection-start-line="104" selection-end-line="104" />
+        <state relative-caret-position="1235">
+          <caret line="69" column="83" selection-start-line="69" selection-start-column="27" selection-end-line="69" selection-end-column="83" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
           </folding>
@@ -466,8 +469,8 @@
     </entry>
     <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/tushare/stock/trading.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="411">
-          <caret line="422" column="4" selection-start-line="422" selection-start-column="4" selection-end-line="422" selection-end-column="4" />
+        <state relative-caret-position="158">
+          <caret line="1005" column="82" selection-start-line="1005" selection-start-column="73" selection-end-line="1005" selection-end-column="82" />
           <folding>
             <element signature="e#124#155#0" expanded="true" />
           </folding>
@@ -476,8 +479,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="228">
-          <caret line="159" column="101" lean-forward="true" selection-start-line="159" selection-start-column="101" selection-end-line="159" selection-end-column="101" />
+        <state relative-caret-position="283">
+          <caret line="160" column="102" selection-start-line="160" selection-start-column="102" selection-end-line="160" selection-end-column="102" />
           <folding>
             <element signature="e#0#22#0" expanded="true" />
           </folding>

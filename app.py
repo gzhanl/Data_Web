@@ -65,8 +65,8 @@ def main():
 
 
         with st.beta_expander("板块个股资金流(今日)"):
-
-             display_bk_stock_cf_data(bk_code)
+             if st.checkbox("Show:"):
+                display_bk_stock_cf_data(bk_code)
 
 
 
@@ -148,7 +148,7 @@ def main():
 
                      File_path = App_path + '\\Data\\Industry_data\\'
 
-                     df.to_csv(File_path.strip() + '沪深股通持股记录.csv')
+                     # df.to_csv(File_path.strip() + '沪深股通持股记录.csv')
 
                      for bk_name in bk_list:
                           try :
@@ -158,7 +158,7 @@ def main():
                               dfs['df_{}'.format(bk_code_no)] = ts.get_nbfbk_hist_capital_flow(bk_code_no)
                               # df_list.append(dfs['df_{}'.format(bk_code_no)])
                               dfs['df_{}'.format(bk_code_no)].dropna(axis=0, how='any', inplace=True)
-                              dfs['df_{}'.format(bk_code_no)].to_excel( File_path + bk_code_no +'nfbk_trend.xlsx')
+                              dfs['df_{}'.format(bk_code_no)].to_excel( File_path + bk_code_no +'_nfbk.xlsx',index=False)
                               # print(df_list)
                           except Exception as e:
                               pass

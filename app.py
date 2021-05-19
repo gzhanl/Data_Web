@@ -9,6 +9,8 @@ from pyecharts import options as opts
 from pyecharts.charts import Bar , Line
 from streamlit_echarts import st_pyecharts
 import plotly.figure_factory as ff
+
+from multiprocessing import Pool
 import os
 from decimal import  *
 import time
@@ -135,7 +137,69 @@ def main():
                      st.dataframe(data=df,width=2000, height=500)
 
             with st.beta_expander("Data : 北向资金行业板块趋势："):
+
+                 if st.button("Update Data"):
+                     bk_index = json_to_str()
+                     # 将 str格式板块资料 转为 list
+                     bk_list = list(bk_index['板块'])  # bk_list 全部板块名
+
+                     App_path = os.path.abspath(os.path.dirname(os.getcwd()))
+
+                     File_path = App_path + '\\Data\\Industry_data\\'
+
+                     for bk_name in bk_list:
+                         try:
+                             bk_code = bk_index['板块'][bk_name]
+                             bk_code_no = bk_code[-3:]
+                             # df=ts.get_nbfbk_hist_capital_flow(bk_code_no)
+                             # dfs['df_{}'.format(bk_code_no)] = ts.update_nbfbk_hist_capital_flow_CSV(bk_code_no)
+                             ts.update_nbfbk_hist_capital_flow_CSV(bk_code_no)
+                             # df_list.append(dfs['df_{}'.format(bk_code_no)])
+                             # dfs['df_{}'.format(bk_code_no)].dropna(axis=0, how='any', inplace=True)
+                             # dfs['df_{}'.format(bk_code_no)].to_csv( File_path + bk_code_no +'_nfbk.csv',index=False)
+                             # print(df_list)
+                         except Exception as e:
+                             pass
+                         continue
+                     print("update finsh ! ")
+                     st.success("Finish ! ")
+
+                     # bk_index = json_to_str()
+                     # # 将 str格式板块资料 转为 list
+                     # bk_list = list(bk_index['板块'])  # bk_list 全部板块名
+                     #
+                     # App_path = os.path.abspath(os.path.dirname(os.getcwd()))
+                     #
+                     # File_path = App_path + '\\Data\\Industry_data\\'
+                     #
+                     #
+                     # def map_fun(bk_name):
+                     #     try:
+                     #         bk_code = bk_index['板块'][bk_name]
+                     #         bk_code_no = bk_code[-3:]
+                     #         # df=ts.get_nbfbk_hist_capital_flow(bk_code_no)
+                     #         # dfs['df_{}'.format(bk_code_no)] = ts.update_nbfbk_hist_capital_flow_CSV(bk_code_no)
+                     #         ts.update_nbfbk_hist_capital_flow_CSV(bk_code_no)
+                     #         # df_list.append(dfs['df_{}'.format(bk_code_no)])
+                     #         # dfs['df_{}'.format(bk_code_no)].dropna(axis=0, how='any', inplace=True)
+                     #         # dfs['df_{}'.format(bk_code_no)].to_csv( File_path + bk_code_no +'_nfbk.csv',index=False)
+                     #         # print(df_list)
+                     #     except Exception as e:
+                     #         pass
+                     #
+                     #
+                     # itr_arg=[ bk_name for bk_name in bk_list]
+                     #
+                     # pool=Pool(4)
+                     #
+                     # pool.map(map_fun,itr_arg)
+                     # pool.close()
+                     # pool.join()
+                     #
+                     # st.success("Finish ! ")
+
                  if st.checkbox("Plot Line Chart"):
+
                      bk_index = json_to_str()
                     # 将 str格式板块资料 转为 list
                      bk_list = list(bk_index['板块'])  # bk_list 全部板块名
@@ -150,27 +214,7 @@ def main():
 
                      # df.to_csv(File_path.strip() + '沪深股通持股记录.csv')
 
-                     for bk_name in bk_list:
-                          try :
-                              bk_code = bk_index['板块'][bk_name]
-                              bk_code_no = bk_code[-3:]
-                              # df=ts.get_nbfbk_hist_capital_flow(bk_code_no)
-                              dfs['df_{}'.format(bk_code_no)] = ts.get_nbfbk_hist_capital_flow(bk_code_no)
-                              # df_list.append(dfs['df_{}'.format(bk_code_no)])
-                              dfs['df_{}'.format(bk_code_no)].dropna(axis=0, how='any', inplace=True)
-                              dfs['df_{}'.format(bk_code_no)].to_excel( File_path + bk_code_no +'_nfbk.xlsx',index=False)
-                              # print(df_list)
-                          except Exception as e:
-                              pass
-                          continue
-                     # df = pd.concat(df_list)
-                     # df.dropna(axis=0, how='any', inplace=True)
-                     #
-                     # File_path = 'C:\\Users\\DELL\\Desktop\\Data_Web\\Data\\'
-                     # # df.to_excel(File_path.strip() + 'nfbk_trend.xlsx')
-                     # pd.read_excel(File_path.strip() + 'nfbk_trend.xlsx')
-
-                     st.success("Finish ! ")
+                     plot_nbfbk_trend_LineChart()
 
 
       # ---------------------------------------------------------------------------------------------------------------
@@ -194,6 +238,8 @@ def main():
             with st.beta_expander("Line Chart"):
 
                 plot_nbfbk_data_LineChart(bk_code)
+
+                plot_nbfbk_shareholding_value_LineChart(bk_code)
 
                 plot_nbf_total_bk_data_LineChart(bk_code)
 
@@ -228,6 +274,7 @@ def main():
                     df_stock = df_stock[df_stock['Stock_Code'] == int(stock_no)]
                     st.dataframe(df_stock)
                     plot_stock_in_nbf_Shareholding_Percent_LineChart(df_stock)
+                    plot_stock_in_nbf_Shareholding_LineChart(df_stock)
 
 
 
@@ -373,9 +420,10 @@ def plot_bk_buy_LineChart(bk_code):
         "toolbox": {
             "feature": {
                 "dataView": {"show": True, "readOnly": False},
-                "magicType": {"show": True, "type": ["line", "bar"]},
+                "magicType": {"show": True, "type": ['line', 'bar', 'stack', 'tiled']},
                 "restore": {"show": True},
                 "saveAsImage": {"show": True},
+                "dataZoom": {"show": True},
             }
         },
         "legend": {"data": ["主力买入比", "降水量", "平均温度"]},
@@ -451,9 +499,10 @@ def plot_bk_buy_Ratio_LineChart(bk_code):
         "toolbox": {
             "feature": {
                 "dataView": {"show": True, "readOnly": False},
-                "magicType": {"show": True, "type": ["line", "bar"]},
+                "magicType": {"show": True, "type": ['line', 'bar', 'stack', 'tiled']},
                 "restore": {"show": True},
                 "saveAsImage": {"show": True},
+                "dataZoom": {"show": True}
             }
         },
         "legend": {"data": ["主力买入比"]},
@@ -519,7 +568,11 @@ def display_nbfbk_data(bk_code):
     # 获取板块 号码
     bk_code_no = bk_code[-3:]
     # print(bk_code_no)
+
     df = ts.get_nbfbk_hist_capital_flow(bk_code_no)
+
+    # df = ts.get_nbfbk_hist_capital_flow_CSV(bk_code_no)
+
     # df=get_nbfbk_data(bk_code)
     st.dataframe(df)
 
@@ -528,11 +581,15 @@ def display_nbfbk_data(bk_code):
 def plot_nbfbk_data_LineChart(bk_code):
     bk_code_no = bk_code[-3:]
     # print(bk_code_no)
-    df = ts.get_nbfbk_hist_capital_flow(bk_code_no)
+    # df = ts.get_nbfbk_hist_capital_flow(bk_code_no)
 
+    # df = ts.get_nbfbk_hist_capital_flow_CSV(bk_code_no)
+
+
+    df = ts.get_nbfbk_hist_capital_flow(bk_code_no)
     df = df.drop(index=[0])  # 去除 None 值 ，不然 max() 失效
     # print(df)
-    col1, col2, col3 = st.beta_columns([1, 1, 1])
+    # col1, col2, col3 = st.beta_columns([1, 1, 1])
 
     min_value = df["znzjb"].astype(str).min()
     # min_value = float(min_value) * 0.97
@@ -560,9 +617,10 @@ def plot_nbfbk_data_LineChart(bk_code):
         "toolbox": {
             "feature": {
                 "dataView": {"show": True, "readOnly": False},
-                "magicType": {"show": True, "type": ["line", "bar"]},
+                "magicType": {"show": True, "type": ['line', 'bar', 'stack', 'tiled']},
                 "restore": {"show": True},
                 "saveAsImage": {"show": True},
+                "dataZoom": {"show": True}
             }
         },
         "legend": {"data": ["北向资金持股占总北向资金比", "", ""]},
@@ -603,11 +661,178 @@ def plot_nbfbk_data_LineChart(bk_code):
     st_echarts(Line_Chart)
 
 
+
+#  画图 当前板块市北向资金持股市值
+def plot_nbfbk_shareholding_value_LineChart(bk_code):
+    bk_code_no = bk_code[-3:]
+    # print(bk_code_no)
+    # df = ts.get_nbfbk_hist_capital_flow(bk_code_no)
+
+    # df = ts.get_nbfbk_hist_capital_flow_CSV(bk_code_no)    #  用CSV数据
+
+    df = ts.get_nbfbk_hist_capital_flow(bk_code_no)
+    df = df.drop(index=[0])  # 去除 None 值 ，不然 max() 失效
+    # print(df)
+    # col1, col2, col3 = st.beta_columns([1, 1, 1])
+
+    df["cgsz"]=df["cgsz"].str.replace(',','')  # 重要
+
+    # min_value = df["cgsz"].min()
+    # # min_value = float(min_value) * 0.97
+    # min_value = round(float(min_value) * 0.97 ,4 )
+    #
+    #
+    # # print(min_value)
+    #
+    # max_value = df["cgsz"].max(skipna=True)
+    # max_value = round(float(max_value) * 1.03 , 4)
+
+
+
+
+    list_cgsz=df["cgsz"].tolist()
+
+    # list_Shareholding=map(eval,list_Shareholding)
+
+    list_cgsz_float = [float(i) for i in list_cgsz]  # 将 list 里面的string 转为 float
+
+    # print(list_Shareholding)
+    # print(list_Shareholding_float)
+    min_value=myMin(list_cgsz_float)
+
+    min_value = round(float(min_value) * 0.9 , 0)
+
+
+
+    max_value=myMax(list_cgsz_float)
+
+    max_value = round(float(max_value) * 1.1 , 0)
+
+
+
+
+    # print(max_value)
+
+    # with col1:
+    #     min_scale = st.slider('MIN', 0.000, 1.000, min_value, 0.005)
+    #
+    # with col2:
+    #     max_scale = st.slider('MAX', 0.000, 1.000, max_value, 0.005)
+
+    Line_Chart = {
+        "tooltip": {
+            "trigger": "axis",
+            "axisPointer": {"type": "cross", "crossStyle": {"color": "#999"}},
+        },
+        "toolbox": {
+            "feature": {
+                "dataView": {"show": True, "readOnly": False},
+                "magicType": {"show": True, "type": ['line', 'bar', 'stack', 'tiled']},
+                "restore": {"show": True},
+                "saveAsImage": {"show": True},
+                "dataZoom": {"show": True}
+            }
+        },
+        "legend": {"data": ["北向资金持股市值", "", ""]},
+        "xAxis": [
+            {
+                "type": "category",
+                "data": df["date"].sort_index(ascending=False).tolist(),
+                "axisPointer": {"type": "shadow"},
+            }
+        ],
+        "yAxis": [  ## 左边 Y轴
+            {
+                "type": "value",
+                "name": "市值",
+                "min": min_value,
+                "max": max_value,
+                #"interval": 10000000,
+                "axisLabel": {"formatter": "{value} "},
+            },
+            # {       ## 右边 Y轴
+            #     "type": "value",
+            #     "name": "温度",
+            #     "min": 0,
+            #     "max": 25,
+            #     "interval": 5,
+            #     "axisLabel": {"formatter": "{value} °C"},
+            # },
+        ],
+        "series": [
+            {
+                "name": "北向资金持股市值",
+                "type": "line",
+                "yAxisIndex": 0,
+                "data": df["cgsz"].sort_index(ascending=False).tolist(),
+            },
+        ],
+    }
+    st_echarts(Line_Chart)
+
+
+
+
+
+    # Line_Chart = {
+    #     "tooltip": {
+    #         "trigger": "axis",
+    #         "axisPointer": {"type": "cross", "crossStyle": {"color": "#999"}},
+    #     },
+    #     "toolbox": {
+    #         "feature": {
+    #             "dataView": {"show": True, "readOnly": False},
+    #             "magicType": {"show": True, "type": ['line', 'bar', 'stack', 'tiled']},
+    #             "restore": {"show": True},
+    #             "saveAsImage": {"show": True},
+    #             "dataZoom": {"show": True}
+    #         }
+    #     },
+    #     "legend": {"data": [ Stock_Name + "--滬深港通持股数", "", ""]},
+    #     "xAxis": [
+    #         {
+    #             "type": "category",
+    #             "data": df_stock["Date"].sort_index(ascending=True).tolist(),
+    #             "axisPointer": {"type": "shadow"},
+    #         }
+    #     ],
+    #     "yAxis": [  ## 左边 Y轴
+    #         {
+    #             "type": "value",
+    #             "name": "持股数",
+    #             "min": min_value,
+    #             "max": max_value,
+    #             # "interval": 1,
+    #             "axisLabel": {"formatter": "{value} "},
+    #         },
+    #         # {       ## 右边 Y轴
+    #         #     "type": "value",
+    #         #     "name": "温度",
+    #         #     "min": 0,
+    #         #     "max": 25,
+    #         #     "interval": 5,
+    #         #     "axisLabel": {"formatter": "{value} °C"},
+    #         # },
+    #     ],
+    #     "series": [
+    #         {
+    #             "name": Stock_Name + "--滬深港通持股数",
+    #             "type": "line",
+    #             "color":"green",
+    #             "yAxisIndex": 0,
+    #             "data": df_stock["Shareholding"].sort_index(ascending=True).tolist(),
+    #         },
+    #     ],
+    # }
+    # st_echarts(Line_Chart)
+
+
 #  画图 当前板块北向资金占板块（A股）比
 def plot_nbf_total_bk_data_LineChart(bk_code):
     bk_code_no = bk_code[-3:]
     # print(bk_code_no)
     df = ts.get_nbfbk_hist_capital_flow(bk_code_no)
+    # df = ts.get_nbfbk_hist_capital_flow_CSV(bk_code_no)
 
     df = df.drop(index=[0])  # 去除 None 值 ，不然 max() 失效
     # print(df)
@@ -639,9 +864,10 @@ def plot_nbf_total_bk_data_LineChart(bk_code):
         "toolbox": {
             "feature": {
                 "dataView": {"show": True, "readOnly": False},
-                "magicType": {"show": True, "type": ["line", "bar"]},
+                "magicType": {"show": True, "type": ['line', 'bar', 'stack', 'tiled']},
                 "restore": {"show": True},
                 "saveAsImage": {"show": True},
+                "dataZoom": {"show": True}
             }
         },
         "legend": {"data": ["北向资金持股占总板块资金比", "", ""]},
@@ -683,6 +909,169 @@ def plot_nbf_total_bk_data_LineChart(bk_code):
     st_echarts(Line_Chart)
 
 
+#  画图 当前板块北向资金占总 北向 资金比
+def plot_nbfbk_trend_LineChart():
+    bk_code_no = bk_code[-3:]
+    # print(bk_code_no)
+    # df = ts.get_nbfbk_hist_capital_flow(bk_code_no)
+
+    df = ts.get_nbfbk_hist_capital_flow_CSV(bk_code_no)
+
+    # df = df.drop(index=[0])  # 去除 None 值 ，不然 max() 失效
+    # print(df)
+    # col1, col2, col3 = st.beta_columns([1, 1, 1])
+
+    min_value = df["znzjb"].astype(str).min()
+    # min_value = float(min_value) * 0.97
+    min_value = round(float(min_value) * 0.97 ,4 )
+
+
+    # print(min_value)
+
+    max_value = df["znzjb"].astype(str).max(skipna=True)
+    max_value = round(float(max_value) * 1.03 , 4)
+
+    # print(max_value)
+
+    # with col1:
+    #     min_scale = st.slider('MIN', 0.000, 1.000, min_value, 0.005)
+    #
+    # with col2:
+    #     max_scale = st.slider('MAX', 0.000, 1.000, max_value, 0.005)
+
+    Line_Chart = {
+        "tooltip": {
+            "trigger": "axis",
+            "axisPointer": {"type": "cross", "crossStyle": {"color": "#999"}},
+        },
+        "toolbox": {
+            "feature": {
+                "dataView": {"show": True, "readOnly": False},
+                "magicType": {"show": True, "type": ['line', 'bar', 'stack', 'tiled']},
+                "restore": {"show": True},
+                "saveAsImage": {"show": True},
+                "dataZoom": {"show": True}
+            }
+        },
+        "legend": {"data": ["北向资金持股占总北向资金比", "", ""]},
+        "xAxis": [
+            {
+                "type": "category",
+                "data": df["date"].sort_index(ascending=True).tolist(),
+                "axisPointer": {"type": "shadow"},
+            }
+        ],
+        "yAxis": [  ## 左边 Y轴
+            {
+                "type": "value",
+                "name": "比值",
+                "min": min_value,
+                "max": max_value,
+                "interval": 0.01,
+                "axisLabel": {"formatter": "{value} "},
+            },
+            # {       ## 右边 Y轴
+            #     "type": "value",
+            #     "name": "温度",
+            #     "min": 0,
+            #     "max": 25,
+            #     "interval": 5,
+            #     "axisLabel": {"formatter": "{value} °C"},
+            # },
+        ],
+        "series": [
+            {
+                "name": "北向资金持股占总北向资金比",
+                "type": "line",
+                "yAxisIndex": 0,
+                "data": df["znzjb"].sort_index(ascending=True).tolist(),
+            },
+        ],
+    }
+    st_echarts(Line_Chart)
+
+
+
+#  画图 当前板块北向资金占总 北向 资金比
+def plot_nbfbk_trend_LineChart():
+    bk_code_no = bk_code[-3:]
+    # print(bk_code_no)
+    # df = ts.get_nbfbk_hist_capital_flow(bk_code_no)
+
+    df = ts.get_nbfbk_hist_capital_flow_CSV(bk_code_no)
+
+    # df = df.drop(index=[0])  # 去除 None 值 ，不然 max() 失效
+    # print(df)
+    # col1, col2, col3 = st.beta_columns([1, 1, 1])
+
+    min_value = df["znzjb"].astype(str).min()
+    # min_value = float(min_value) * 0.97
+    min_value = round(float(min_value) * 0.97 ,4 )
+
+
+    # print(min_value)
+
+    max_value = df["znzjb"].astype(str).max(skipna=True)
+    max_value = round(float(max_value) * 1.03 , 4)
+
+    # print(max_value)
+
+    # with col1:
+    #     min_scale = st.slider('MIN', 0.000, 1.000, min_value, 0.005)
+    #
+    # with col2:
+    #     max_scale = st.slider('MAX', 0.000, 1.000, max_value, 0.005)
+
+    Line_Chart = {
+        "tooltip": {
+            "trigger": "axis",
+            "axisPointer": {"type": "cross", "crossStyle": {"color": "#999"}},
+        },
+        "toolbox": {
+            "feature": {
+                "dataView": {"show": True, "readOnly": False},
+                "magicType": {"show": True, "type": ['line', 'bar', 'stack', 'tiled']},
+                "restore": {"show": True},
+                "saveAsImage": {"show": True},
+                "dataZoom": {"show": True}
+            }
+        },
+        "legend": {"data": ["北向资金持股占总北向资金比", "", ""]},
+        "xAxis": [
+            {
+                "type": "category",
+                "data": df["date"].sort_index(ascending=True).tolist(),
+                "axisPointer": {"type": "shadow"},
+            }
+        ],
+        "yAxis": [  ## 左边 Y轴
+            {
+                "type": "value",
+                "name": "比值",
+                "min": min_value,
+                "max": max_value,
+                "interval": 0.01,
+                "axisLabel": {"formatter": "{value} "},
+            },
+            # {       ## 右边 Y轴
+            #     "type": "value",
+            #     "name": "温度",
+            #     "min": 0,
+            #     "max": 25,
+            #     "interval": 5,
+            #     "axisLabel": {"formatter": "{value} °C"},
+            # },
+        ],
+        "series": [
+            {
+                "name": "北向资金持股占总北向资金比",
+                "type": "line",
+                "yAxisIndex": 0,
+                "data": df["znzjb"].sort_index(ascending=True).tolist(),
+            },
+        ],
+    }
+    st_echarts(Line_Chart)
 
 
 #  画图 当前個股佔交易所（A股）百分比
@@ -719,9 +1108,10 @@ def plot_stock_in_nbf_Shareholding_Percent_LineChart(df_stock):
         "toolbox": {
             "feature": {
                 "dataView": {"show": True, "readOnly": False},
-                "magicType": {"show": True, "type": ["line", "bar"]},
+                "magicType": {"show": True, "type": ['line', 'bar', 'stack', 'tiled']},
                 "restore": {"show": True},
                 "saveAsImage": {"show": True},
+                "dataZoom": {"show": True}
             }
         },
         "legend": {"data": [ Stock_Name + "--滬深港通持股占A股比", "", ""]},
@@ -762,6 +1152,131 @@ def plot_stock_in_nbf_Shareholding_Percent_LineChart(df_stock):
     }
     st_echarts(Line_Chart)
 
+
+
+#  画图 当前個股股數
+def plot_stock_in_nbf_Shareholding_LineChart(df_stock):
+
+    Stock_Name = df_stock.iloc[1,3]  # 獲取第第3列 第1個數
+    # df.iloc[0, 0]
+    # print(Stock_Name)
+    # min_value = df_stock["Shareholding_Percent"].astype(str).min()
+
+
+    df_stock["Shareholding"]=df_stock["Shareholding"].str.replace(',','')  # 重要
+
+    list_Shareholding=df_stock["Shareholding"].tolist()
+
+    # list_Shareholding=map(eval,list_Shareholding)
+
+    list_Shareholding_float = [float(i) for i in list_Shareholding]  # 将 list 里面的string 转为 float
+
+    # print(list_Shareholding)
+    # print(list_Shareholding_float)
+    min_value=myMin(list_Shareholding_float)
+
+    # print(min_value)
+    min_value = round(float(min_value) * 0.2  , 0 )
+
+    max_value=myMax(list_Shareholding_float)
+
+    # print(max_value)
+    max_value = round(float(max_value) * 1.1  , 0 )
+
+
+    # print(max_value)
+
+    # with col1:
+    #     min_scale = st.slider('MIN', 0.000, 1.000, min_value, 0.005)
+    #
+    # with col2:
+    #     max_scale = st.slider('MAX', 0.000, 1.000, max_value, 0.005)
+
+    Line_Chart = {
+        "tooltip": {
+            "trigger": "axis",
+            "axisPointer": {"type": "cross", "crossStyle": {"color": "#999"}},
+        },
+        "toolbox": {
+            "feature": {
+                "dataView": {"show": True, "readOnly": False},
+                "magicType": {"show": True, "type": ['line', 'bar', 'stack', 'tiled']},
+                "restore": {"show": True},
+                "saveAsImage": {"show": True},
+                "dataZoom": {"show": True}
+            }
+        },
+        "legend": {"data": [ Stock_Name + "--滬深港通持股数", "", ""]},
+        "xAxis": [
+            {
+                "type": "category",
+                "data": df_stock["Date"].sort_index(ascending=True).tolist(),
+                "axisPointer": {"type": "shadow"},
+            }
+        ],
+        "yAxis": [  ## 左边 Y轴
+            {
+                "type": "value",
+                "name": "持股数",
+                "min": min_value,
+                "max": max_value,
+                # "interval": 1,
+                "axisLabel": {"formatter": "{value} "},
+            },
+            # {       ## 右边 Y轴
+            #     "type": "value",
+            #     "name": "温度",
+            #     "min": 0,
+            #     "max": 25,
+            #     "interval": 5,
+            #     "axisLabel": {"formatter": "{value} °C"},
+            # },
+        ],
+        "series": [
+            {
+                "name": Stock_Name + "--滬深港通持股数",
+                "type": "line",
+                "color":"green",
+                "yAxisIndex": 0,
+                "data": df_stock["Shareholding"].sort_index(ascending=True).tolist(),
+            },
+        ],
+    }
+    st_echarts(Line_Chart)
+
+
+def myMax(list1):
+    # Assume first number in list is largest
+    # initially and assign it to variable "max"
+    max = list1[0]
+
+    # Now traverse through the list and compare
+    # each number with "max" value. Whichever is
+    # largest assign that value to "max'.
+    for x in list1:
+        if x > max:
+            max = x
+
+    # after complete traversing the list
+    # return the "max" value
+    return max
+
+def myMin(list1):
+    # Assume first number in list is largest
+    # initially and assign it to variable "max"
+    min = list1[0]
+
+    # Now traverse through the list and compare
+    # each number with "max" value. Whichever is
+    # largest assign that value to "max'.
+    for x in list1:
+        if x < min:
+            min = x
+
+    # after complete traversing the list
+    # return the "max" value
+    return min
+
 # 显示 滬股通及深股通持股紀錄 今日
 def display_Stock_HK_Shareholding_Today():
 
@@ -774,6 +1289,9 @@ def display_Stock_HK_Shareholding_Today():
 
     df["Shareholding_Percent"] = pd.to_numeric(df["Shareholding_Percent"])
     df = df.sort_values('Shareholding_Percent',ascending=False)
+
+    df["Shareholding"] = df["Shareholding"].str.replace(',', '')  # 重要
+    df["Shareholding"] = pd.to_numeric(df["Shareholding"])
 
 
     # st.dataframe(df)

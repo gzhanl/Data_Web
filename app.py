@@ -20,6 +20,8 @@ import pandas as pd
 import tushare as ts
 import  json as js
 
+import north_money
+
 pd.set_option('precision', 5)
 np.set_printoptions(precision=8)
 
@@ -122,6 +124,13 @@ def main():
                      df['td_nf_ratio'] = df['td_nf_ratio'].apply(convert_to_float)
                      df["td_nf_ratio"] = pd.to_numeric(df["td_nf_ratio"])
 
+                     # 保留14位小数位
+                     #getcontext().prec = 0
+                     df['td_shareholding_value'] = df['td_shareholding_value'].apply(convert_to_float)
+                     df["td_shareholding_value"] = pd.to_numeric(df["td_shareholding_value"])
+                     df["td_shareholding_value"]=round(df["td_shareholding_value"] ,0 )
+
+
                      df["td_increase_nf_ratio"] = pd.to_numeric(df["td_increase_nf_ratio"])
                     # 保留10位小数位
                      getcontext().prec = 10
@@ -135,6 +144,7 @@ def main():
                      # st.info("td_stock_count:北资今日持股股票只数   td_shareholding_value：北资今日持股市值  td_bk_ratio：北资今日持股占板块比  td_nf_ratio：北资今日持股占北向资金比")
 
                      st.dataframe(data=df,width=2000, height=500)
+
 
             with st.beta_expander("Data : 北向资金行业板块趋势："):
 

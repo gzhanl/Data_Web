@@ -1,10 +1,15 @@
-from fake_useragent import UserAgent
+import tushare as ts
 
-ua = UserAgent()
-# user_agent = ua.random
-# my_header = {'user-agent': user_agent}
+token = '67bcc08d60c4287441a1a80dd58701c5fd2d2c916bbf6758bb9cc05d'
 
-for i in range(100):
-    user_agent = ua.random
-    my_header = {'user-agent': user_agent}
-    print(my_header)
+pro = ts.pro_api(token)
+
+#获取单日全部持股
+df1 = pro.hk_hold(trade_date='20210604')
+
+print(df1)
+
+df1.to_csv('TS_Code_Table.csv')
+# #获取单日交易所所有持股
+# df2 = pro.hk_hold(trade_date='20190625', exchange='SH')
+# print(df2)
